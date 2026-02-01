@@ -48,6 +48,41 @@ public class Admin extends User {
         return newUser;
     }
 
+<<<<<<< Updated upstream
+=======
+    public boolean resetPassword(User user, String newPass) {
+        if (user == null)
+            return false;
+        if (user.verifyPassword(newPass))
+            return false;
+
+        boolean hasDigit = false;
+        boolean hasSpecial = false;
+        String specialChars = "!@#$^()&_";
+
+        for (char c : newPass.toCharArray()) {
+            if (Character.isDigit(c))
+                hasDigit = true;
+            if (specialChars.indexOf(c) != -1)
+                hasSpecial = true;
+        }
+
+        if (newPass.length() >= 6 && hasDigit && hasSpecial) {
+            user.setPassword(newPass);
+            saveUsersToFile();
+            return true;
+        }
+        return false;
+    }
+
+    public boolean deleteUser(String username) {
+        boolean removed = users.removeIf(user -> user.getUsername().equals(username));
+        if (removed)
+            saveUsersToFile();
+        return removed;
+    }
+
+>>>>>>> Stashed changes
     public void saveUsersToFile() {
         ArrayList<String> dataLine = new ArrayList<>();
         for (User u : users) {
@@ -78,15 +113,31 @@ public class Admin extends User {
             String username = data[1].trim();
             String password = data[2].trim();
             // Default ID if not present
-            String employeeId = (data.length >= 4) ? data[3].trim() : "ADMIN-01";
+            String employeeId = (data.length >= 4) ? data[3].trim() : "DEFAULT-01";
 
-            if (role.equalsIgnoreCase("admin"))
+            if (role.equalsIgnoreCase("admin")) {
                 // Ensure this calls the 'true' constructor
                 users.add(new Admin(username, password, fileHandler, this.masterInventory, true));
+            } else if (role.equalsIgnoreCase("manager")) {
+                users.add(new Manager(username, password, employeeId, this.masterInventory, true));
+            } else if (role.equalsIgnoreCase("salesemployee")) {
+                users.add(new SalesEmployee(username, password, employeeId,
+                        new FileHandler<TransactionRec>(), this.masterInventory, true));
+            }
         }
-        // ... rest of your if/else logic
     }
 
+<<<<<<< Updated upstream
+=======
+    public ArrayList<String> viewAllUsers() {
+        ArrayList<String> userList = new ArrayList<>();
+        for (User u : users) {
+            userList.add("Name: " + u.getUsername() + " | Role: " + u.getClass().getSimpleName());
+        }
+        return userList;
+    }
+
+>>>>>>> Stashed changes
     public ArrayList<User> getAllUsers() {
         return new ArrayList<>(users);
     }

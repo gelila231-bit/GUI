@@ -11,6 +11,11 @@ public class Employee extends User {
         this.employeeID = employeeID;
     }
 
+    public Employee(String username, String hashedPassword, boolean alreadyHashed) {
+        super(username, hashedPassword, alreadyHashed);
+        this.employeeID = "UNKNOWN";
+    }
+
     @Override
     public boolean login(String username, String password) {
         if (getUsername().equals(username) && verifyPassword(password)) {
