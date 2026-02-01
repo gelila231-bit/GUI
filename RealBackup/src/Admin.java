@@ -48,6 +48,35 @@ public class Admin extends User {
         return newUser;
     }
 
+    public boolean resetPassword(User user, String newPass) {
+        if (user == null) return false;
+        if (user.verifyPassword(newPass)) return false;
+
+        boolean hasDigit = false;
+        boolean hasSpecial = false;
+        String specialChars = "!@#$^()&_";
+
+        for (char c : newPass.toCharArray()) {
+            if (Character.isDigit(c)) hasDigit = true;
+            if (specialChars.indexOf(c) != -1) hasSpecial = true;
+        }
+
+        if (newPass.length() >= 6 && hasDigit && hasSpecial) {
+            user.setPassword(newPass);
+            saveUsersToFile();
+            return true;
+        }
+        return false;
+    }
+
+    public boolean deleteUser(String username) {
+        boolean removed = users.removeIf(user -> user.getUsername().equals(username));
+        if (removed) saveUsersToFile();
+        return removed;
+    }
+
+
+
     public void saveUsersToFile() {
         ArrayList<String> dataLine = new ArrayList<>();
         for (User u : users) {
@@ -86,6 +115,15 @@ public class Admin extends User {
         }
         // ... rest of your if/else logic
     }
+    public ArrayList<String> viewAllUsers() {
+        ArrayList<String> userList = new ArrayList<>();
+        for (User u : users) {
+            userList.add("Name: " + u.getUsername() + " | Role: " + u.getClass().getSimpleName());
+        }
+        return userList;
+    }
+
+
 
     public ArrayList<User> getAllUsers() {
         return new ArrayList<>(users);
