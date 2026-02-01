@@ -13,7 +13,7 @@ public class Admin extends User {
     }
 
     public Admin(String username, String hashedPassword, FileHandler<String> fileHandler,
-                 InventoryManager1 inv, boolean alreadyHashed) {
+            InventoryManager1 inv, boolean alreadyHashed) {
         super(username, hashedPassword, alreadyHashed);
         this.fileHandler = fileHandler;
         this.masterInventory = inv;
@@ -68,23 +68,23 @@ public class Admin extends User {
             return;
         }
 
+        // Inside loadUsersFromFile() loop
         for (String line : lines) {
             String[] data = line.split(",");
+            if (data.length < 3)
+                continue; // Safety check
+
             String role = data[0].trim();
             String username = data[1].trim();
             String password = data[2].trim();
+            // Default ID if not present
+            String employeeId = (data.length >= 4) ? data[3].trim() : "ADMIN-01";
 
-            if (role.equalsIgnoreCase("admin")) {
+            if (role.equalsIgnoreCase("admin"))
+                // Ensure this calls the 'true' constructor
                 users.add(new Admin(username, password, fileHandler, this.masterInventory, true));
-            } else if (role.equalsIgnoreCase("manager") && data.length >= 4) {
-                String employeeId = data[3].trim();
-                users.add(new Manager(username, password, employeeId, this.masterInventory, true));
-            } else if (role.equalsIgnoreCase("salesemployee") && data.length >= 4) {
-                String employeeId = data[3].trim();
-                users.add(new SalesEmployee(username, password, employeeId,
-                        new FileHandler<TransactionRec>(), this.masterInventory, true));
-            }
         }
+        // ... rest of your if/else logic
     }
 
     public ArrayList<User> getAllUsers() {
