@@ -7,16 +7,27 @@ public class NewReportClass {
 
     public ArrayList<String[]> getInventoryReport(ArrayList<String> lines) {
         ArrayList<String[]> report = new ArrayList<>();
-        if (lines == null || lines.isEmpty()) return report;
+        if (lines == null || lines.isEmpty())
+            return report;
 
         for (String line : lines) {
             String[] parts = line.split(",");
-            if (parts.length >= 4) {
+            if (parts.length >= 6) {
+                // New format: name,id,variant,category,price,quantity
+                String name = parts[0].trim();
+                String id = parts[1].trim();
+                String variant = parts[2].trim();
+                String category = parts[3].trim();
+                String price = parts[4].trim();
+                String left = parts[5].trim();
+                report.add(new String[] { name, id, variant, category, price, left });
+            } else if (parts.length >= 4) {
+                // Legacy format: name,id,price,quantity
                 String name = parts[0].trim();
                 String id = parts[1].trim();
                 String price = parts[2].trim();
                 String left = parts[3].trim();
-                report.add(new String[]{name, id, price, left});
+                report.add(new String[] { name, id, "", "", price, left });
             }
         }
         return report;
@@ -24,7 +35,8 @@ public class NewReportClass {
 
     public ArrayList<String[]> getUsersReport(ArrayList<String> lines) {
         ArrayList<String[]> report = new ArrayList<>();
-        if (lines == null || lines.isEmpty()) return report;
+        if (lines == null || lines.isEmpty())
+            return report;
 
         for (String line : lines) {
             String[] parts = line.split(",");
@@ -33,7 +45,7 @@ public class NewReportClass {
                 String username = parts[1].trim();
                 String password = parts[2].trim();
                 String employeeId = parts[3].trim();
-                report.add(new String[]{role, username, password, employeeId});
+                report.add(new String[] { role, username, password, employeeId });
             }
         }
         return report;
@@ -41,7 +53,8 @@ public class NewReportClass {
 
     public ArrayList<String[]> getSalesReport(ArrayList<String> lines) {
         ArrayList<String[]> report = new ArrayList<>();
-        if (lines == null || lines.isEmpty()) return report;
+        if (lines == null || lines.isEmpty())
+            return report;
 
         for (String line : lines) {
             String[] parts = line.split(",");
@@ -52,7 +65,7 @@ public class NewReportClass {
                     String qty = parts[2].trim();
                     String priceAtSale = parts[3].trim();
                     double revenue = Integer.parseInt(qty) * Double.parseDouble(priceAtSale);
-                    report.add(new String[]{date, product, qty, String.valueOf(revenue)});
+                    report.add(new String[] { date, product, qty, String.format("%.2f", revenue) });
                 } catch (NumberFormatException e) {
                     continue;
                 }
@@ -63,7 +76,8 @@ public class NewReportClass {
 
     public double calculateTotalRevenue(ArrayList<String> lines) {
         double grandTotal = 0;
-        if (lines == null || lines.isEmpty()) return grandTotal;
+        if (lines == null || lines.isEmpty())
+            return grandTotal;
 
         for (String line : lines) {
             String[] parts = line.split(",");

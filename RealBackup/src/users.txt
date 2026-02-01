@@ -1,1 +1,2 @@
-admin,admin,0e7517141fb53f21ee439b355b5a1d0a,N/A
+manager,Hana,f536bcd3cdd723a9a230ff402f5177e7,Hana/17
+salesemployee,janet,6693c4bf304499d57d27b8f3aa6c340f,janet/17

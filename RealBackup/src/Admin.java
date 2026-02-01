@@ -48,8 +48,6 @@ public class Admin extends User {
         return newUser;
     }
 
-<<<<<<< Updated upstream
-=======
     public boolean resetPassword(User user, String newPass) {
         if (user == null)
             return false;
@@ -82,7 +80,6 @@ public class Admin extends User {
         return removed;
     }
 
->>>>>>> Stashed changes
     public void saveUsersToFile() {
         ArrayList<String> dataLine = new ArrayList<>();
         for (User u : users) {
@@ -96,7 +93,7 @@ public class Admin extends User {
         ArrayList<String> lines = fileHandler.readFromFile("users.txt");
 
         if (lines.isEmpty()) {
-            // ✅ Create default admin if file is empty
+            // Create default admin if file is empty
             User defaultAdmin = new Admin("admin", "Admin@123", fileHandler, this.masterInventory);
             users.add(defaultAdmin);
             saveUsersToFile();
@@ -127,8 +124,6 @@ public class Admin extends User {
         }
     }
 
-<<<<<<< Updated upstream
-=======
     public ArrayList<String> viewAllUsers() {
         ArrayList<String> userList = new ArrayList<>();
         for (User u : users) {
@@ -137,12 +132,11 @@ public class Admin extends User {
         return userList;
     }
 
->>>>>>> Stashed changes
     public ArrayList<User> getAllUsers() {
         return new ArrayList<>(users);
     }
 
-    // ✅ Authentication method
+    // Authentication method
     public User authenticate(String username, String password) {
         for (User u : users) {
             if (u.login(username, password)) {

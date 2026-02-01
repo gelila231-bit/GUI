@@ -234,17 +234,6 @@ public class AdminUI extends JFrame {
             return;
         }
 
-<<<<<<< Updated upstream
-        ArrayList<User> users = admin.viewAllUsers();
-        for (User u : users) {
-            if (u.getUsername().equals(username)) {
-                if (admin.resetPassword(u, newPass)) {
-                    admin.saveUsersToFile();
-                    JOptionPane.showMessageDialog(this, "Password reset successfully!");
-                } else {
-                    JOptionPane.showMessageDialog(this, "Password reset failed. Check rules.");
-                }
-=======
         String username = userTable.getValueAt(selectedRow, 1).toString();
 
         JDialog dialog = new JDialog(this, "Reset Password", true);
@@ -267,7 +256,6 @@ public class AdminUI extends JFrame {
 
             if (newPass.isEmpty()) {
                 JOptionPane.showMessageDialog(dialog, "Password cannot be empty.", "Error", JOptionPane.ERROR_MESSAGE);
->>>>>>> Stashed changes
                 return;
             }
 

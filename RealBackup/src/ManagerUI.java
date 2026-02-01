@@ -59,7 +59,8 @@ public class ManagerUI extends JFrame {
         add(topPanel, BorderLayout.NORTH);
 
         // Table with better styling
-        tableModel = new DefaultTableModel(new String[] { "Product ID", "Name", "Price", "Quantity", "Status" }, 0) {
+        tableModel = new DefaultTableModel(
+                new String[] { "Product ID", "Name", "Variant", "Category", "Price", "Quantity", "Status" }, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
@@ -71,10 +72,12 @@ public class ManagerUI extends JFrame {
 
         // Column widths
         productTable.getColumnModel().getColumn(0).setPreferredWidth(100);
-        productTable.getColumnModel().getColumn(1).setPreferredWidth(200);
+        productTable.getColumnModel().getColumn(1).setPreferredWidth(150);
         productTable.getColumnModel().getColumn(2).setPreferredWidth(100);
         productTable.getColumnModel().getColumn(3).setPreferredWidth(100);
-        productTable.getColumnModel().getColumn(4).setPreferredWidth(100);
+        productTable.getColumnModel().getColumn(4).setPreferredWidth(80);
+        productTable.getColumnModel().getColumn(5).setPreferredWidth(80);
+        productTable.getColumnModel().getColumn(6).setPreferredWidth(80);
 
         JScrollPane scrollPane = new JScrollPane(productTable);
         add(scrollPane, BorderLayout.CENTER);
@@ -106,15 +109,18 @@ public class ManagerUI extends JFrame {
 
         // Report buttons (separate section)
         JPanel reportPanel = new JPanel(new FlowLayout());
-        reportPanel.setBorder(BorderFactory.createTitledBorder("Reports"));
+        reportPanel.setBorder(BorderFactory.createTitledBorder("Reports & Alerts"));
         JButton inventoryReportBtn = new JButton("View Inventory Report");
         JButton salesReportBtn = new JButton("View Sales Report");
+        JButton stockAlertBtn = new JButton("Stock Alerts (<15)");
 
         styleButton(inventoryReportBtn, new Color(155, 89, 182));
         styleButton(salesReportBtn, new Color(230, 126, 34));
+        styleButton(stockAlertBtn, new Color(231, 76, 60));
 
         reportPanel.add(inventoryReportBtn);
         reportPanel.add(salesReportBtn);
+        reportPanel.add(stockAlertBtn);
 
         mainButtonPanel.add(productPanel, BorderLayout.CENTER);
         mainButtonPanel.add(reportPanel, BorderLayout.SOUTH);
@@ -126,6 +132,7 @@ public class ManagerUI extends JFrame {
         refreshBtn.addActionListener(e -> loadProducts());
         inventoryReportBtn.addActionListener(e -> showInventoryReport());
         salesReportBtn.addActionListener(e -> showSalesReport());
+        stockAlertBtn.addActionListener(e -> showStockAlerts());
 
         return mainButtonPanel;
     }
@@ -366,8 +373,8 @@ public class ManagerUI extends JFrame {
             double quantity = p.getProductQuantity();
             if (quantity == 0) {
                 status = "Out of Stock";
-            } else if (quantity < 10) {
-                status = "Low Stock";
+            } else if (quantity < 15) {
+                status = "Low Stock (<15)";
             } else {
                 status = "In Stock";
             }
@@ -375,6 +382,8 @@ public class ManagerUI extends JFrame {
             tableModel.addRow(new Object[] {
                     p.getProductID(),
                     p.getProductName(),
+                    p.getVariant(),
+                    p.getCategory(),
                     String.format("$%.2f", p.getProductPrice()),
                     quantity,
                     status
@@ -397,14 +406,16 @@ public class ManagerUI extends JFrame {
 
         for (Product p : allProducts) {
             if (p.getProductName().toLowerCase().contains(searchTerm) ||
-                    p.getProductID().toLowerCase().contains(searchTerm)) {
+                    p.getProductID().toLowerCase().contains(searchTerm) ||
+                    p.getVariant().toLowerCase().contains(searchTerm) ||
+                    p.getCategory().toLowerCase().contains(searchTerm)) {
 
                 String status = "";
                 double quantity = p.getProductQuantity();
                 if (quantity == 0) {
                     status = "Out of Stock";
-                } else if (quantity < 10) {
-                    status = "Low Stock";
+                } else if (quantity < 15) {
+                    status = "Low Stock (<15)";
                 } else {
                     status = "In Stock";
                 }
@@ -412,6 +423,8 @@ public class ManagerUI extends JFrame {
                 tableModel.addRow(new Object[] {
                         p.getProductID(),
                         p.getProductName(),
+                        p.getVariant(),
+                        p.getCategory(),
                         String.format("$%.2f", p.getProductPrice()),
                         quantity,
                         status
@@ -421,6 +434,60 @@ public class ManagerUI extends JFrame {
         }
 
         statusLabel.setText("Found " + foundCount + " products matching '" + searchTerm + "'");
+    }
+
+    private void showStockAlerts() {
+        JDialog alertDialog = new JDialog(this, "Stock Alerts (<15 items)", false);
+        alertDialog.setSize(700, 500);
+        alertDialog.setLocationRelativeTo(this);
+
+        JPanel panel = new JPanel(new BorderLayout());
+
+        // Get low stock products
+        ArrayList<Product> lowStockProducts = manager.getInventoryManager().getLowStockProducts(15);
+
+        if (lowStockProducts.isEmpty()) {
+            JLabel noAlertLabel = new JLabel("✅ No products with low stock (<15 items)");
+            noAlertLabel.setFont(new Font("Arial", Font.BOLD, 16));
+            noAlertLabel.setHorizontalAlignment(SwingConstants.CENTER);
+            panel.add(noAlertLabel, BorderLayout.CENTER);
+        } else {
+            // Create table for low stock products
+            String[] columns = { "Product ID", "Name", "Variant", "Category", "Current Stock", "Status" };
+            DefaultTableModel alertModel = new DefaultTableModel(columns, 0);
+            JTable alertTable = new JTable(alertModel);
+            alertTable.setRowHeight(25);
+
+            for (Product p : lowStockProducts) {
+                String status = p.getProductQuantity() == 0 ? "OUT OF STOCK" : "LOW STOCK";
+                alertModel.addRow(new Object[] {
+                        p.getProductID(),
+                        p.getProductName(),
+                        p.getVariant(),
+                        p.getCategory(),
+                        p.getProductQuantity(),
+                        status
+                });
+            }
+
+            panel.add(new JScrollPane(alertTable), BorderLayout.CENTER);
+
+            // Add summary label
+            JLabel summaryLabel = new JLabel("⚠️ " + lowStockProducts.size() + " products need restocking!");
+            summaryLabel.setFont(new Font("Arial", Font.BOLD, 14));
+            summaryLabel.setForeground(Color.RED);
+            panel.add(summaryLabel, BorderLayout.NORTH);
+        }
+
+        JButton closeBtn = new JButton("Close");
+        closeBtn.addActionListener(e -> alertDialog.dispose());
+
+        JPanel buttonPanel = new JPanel(new FlowLayout());
+        buttonPanel.add(closeBtn);
+        panel.add(buttonPanel, BorderLayout.SOUTH);
+
+        alertDialog.add(panel);
+        alertDialog.setVisible(true);
     }
 
     public static void main(String[] args) {

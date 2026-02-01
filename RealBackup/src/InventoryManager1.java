@@ -6,11 +6,11 @@ public class InventoryManager1 {
     private productIdGenerator idGenerator;
 
     public boolean createProduct(String newProductName, String variant, String category,
-                                 double productPrice, double productQuantity) {
+            double productPrice, double productQuantity) {
         idGenerator = new productIdGenerator();
         String productId = idGenerator.generateId(newProductName, variant, category);
 
-        products.add(new Product(newProductName, productId, productPrice, productQuantity));
+        products.add(new Product(newProductName, productId, variant, category, productPrice, productQuantity));
         saveToDisk();
         return true;
     }
@@ -19,6 +19,20 @@ public class InventoryManager1 {
         ArrayList<Product> matchList = new ArrayList<>();
         for (Product product : products) {
             if (product.getProductName().equalsIgnoreCase(productName)) {
+                matchList.add(product);
+            }
+        }
+        return matchList.isEmpty() ? null : matchList;
+    }
+
+    public ArrayList<Product> readProduct(String productName, String variant, String category) {
+        ArrayList<Product> matchList = new ArrayList<>();
+        for (Product product : products) {
+            boolean nameMatch = product.getProductName().equalsIgnoreCase(productName);
+            boolean variantMatch = variant.isEmpty() || product.getVariant().equalsIgnoreCase(variant);
+            boolean categoryMatch = category.isEmpty() || product.getCategory().equalsIgnoreCase(category);
+
+            if (nameMatch && variantMatch && categoryMatch) {
                 matchList.add(product);
             }
         }
@@ -45,13 +59,30 @@ public class InventoryManager1 {
         }
     }
 
+    public ArrayList<Product> getLowStockProducts(int threshold) {
+        ArrayList<Product> lowStock = new ArrayList<>();
+        for (Product product : products) {
+            if (product.getProductQuantity() < threshold) {
+                lowStock.add(product);
+            }
+        }
+        return lowStock;
+    }
+
+    public boolean isLowStock(String productID, int threshold) {
+        Product product = findProductById(productID);
+        return product != null && product.getProductQuantity() < threshold;
+    }
+
     public boolean updateProduct(String productName, double newPrice, double newQuantity) {
         ArrayList<Product> matches = readProduct(productName);
         String targetId = getSelectedProductID(matches, productName);
-        if (targetId == null) return false;
+        if (targetId == null)
+            return false;
 
         Product target = findProductById(targetId);
-        if (target == null) return false;
+        if (target == null)
+            return false;
 
         target.setProductPrice(newPrice);
         target.setProductQuantity(newQuantity);
@@ -62,10 +93,12 @@ public class InventoryManager1 {
     public boolean updateProductPrice(String productName, double newPrice) {
         ArrayList<Product> matches = readProduct(productName);
         String targetId = getSelectedProductID(matches, productName);
-        if (targetId == null) return false;
+        if (targetId == null)
+            return false;
 
         Product target = findProductById(targetId);
-        if (target == null) return false;
+        if (target == null)
+            return false;
 
         target.setProductPrice(newPrice);
         saveToDisk();
@@ -75,10 +108,12 @@ public class InventoryManager1 {
     public boolean updateProductQuantity(String productName, int newQuantity) {
         ArrayList<Product> matches = readProduct(productName);
         String targetId = getSelectedProductID(matches, productName);
-        if (targetId == null) return false;
+        if (targetId == null)
+            return false;
 
         Product target = findProductById(targetId);
-        if (target == null) return false;
+        if (target == null)
+            return false;
 
         target.setProductQuantity(newQuantity);
         saveToDisk();
@@ -88,10 +123,12 @@ public class InventoryManager1 {
     public boolean deleteProduct(String productName) {
         ArrayList<Product> matches = readProduct(productName);
         String targetId = getSelectedProductID(matches, productName);
-        if (targetId == null) return false;
+        if (targetId == null)
+            return false;
 
         Product target = findProductById(targetId);
-        if (target == null) return false;
+        if (target == null)
+            return false;
 
         products.remove(target);
         saveToDisk();
@@ -111,7 +148,8 @@ public class InventoryManager1 {
         products.clear();
         for (String line : lines) {
             Product p = Product.fromString(line);
-            if (p != null) products.add(p);
+            if (p != null)
+                products.add(p);
         }
     }
 
