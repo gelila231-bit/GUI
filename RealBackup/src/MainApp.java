@@ -10,7 +10,7 @@ public class MainApp {
         InventoryManager1 inv = new InventoryManager1();
         inv.loadFromDisk();
 
-        // Load admin and users
+        // Create admin and load users
         admin = new Admin("admin", "Admin@123", fileHandler, inv);
         admin.loadUsersFromFile();
 
@@ -32,6 +32,7 @@ public class MainApp {
             String username = usernameField.getText();
             String password = new String(passwordField.getPassword());
 
+            // Check authentication directly from loaded users
             ArrayList<User> users = admin.getAllUsers();
             for (User u : users) {
                 if (u.login(username, password)) {
