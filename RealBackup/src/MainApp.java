@@ -32,7 +32,7 @@ public class MainApp {
             String username = usernameField.getText();
             String password = new String(passwordField.getPassword());
 
-            ArrayList<User> users = admin.getAllUsers();
+            ArrayList<User> users = admin.viewAllUsers();
             for (User u : users) {
                 if (u.login(username, password)) {
                     JOptionPane.showMessageDialog(null, "Login successful! Welcome " + u.getUsername());

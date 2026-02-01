@@ -86,4 +86,3 @@ public class SalesEmployeeUI extends JFrame {
         SwingUtilities.invokeLater(() -> new SalesEmployeeUI(salesEmployee).setVisible(true));
     }
 }
-

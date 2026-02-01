@@ -80,7 +80,7 @@ public class AdminUI extends JFrame {
         String username = JOptionPane.showInputDialog(this, "Enter username to reset password:");
         String newPass = JOptionPane.showInputDialog(this, "Enter new password:");
 
-        ArrayList<User> users = admin.getAllUsers();
+        ArrayList<User> users = admin.viewAllUsers();
         for (User u : users) {
             if (u.getUsername().equals(username)) {
                 if (admin.resetPassword(u, newPass)) {

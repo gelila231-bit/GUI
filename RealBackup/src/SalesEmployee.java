@@ -107,4 +107,3 @@ public class SalesEmployee extends Employee implements TransactionHandler, Produ
         return getTransactionsRecord();
     }
 }
-
