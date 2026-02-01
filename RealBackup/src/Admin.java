@@ -61,9 +61,9 @@ public class Admin extends User {
         ArrayList<String> lines = fileHandler.readFromFile("users.txt");
 
         if (lines.isEmpty()) {
-            // ✅ Create default admin if file is empty
-            User defaultAdmin = new Admin("admin", "Admin@123", fileHandler, this.masterInventory);
-            users.add(defaultAdmin);
+            // ✅ ADD THIS: Instead of a 'new' admin, add 'this' current object
+            // This ensures the admin object created in MainApp is the one in the list
+            users.add(this);
             saveUsersToFile();
             return;
         }
@@ -99,5 +99,25 @@ public class Admin extends User {
             }
         }
         return null;
+    }
+
+    public boolean deleteUser(String username) {
+        // Prevent the admin from deleting themselves
+        if (username.equals(this.getUsername()))
+            return false;
+
+        boolean removed = users.removeIf(u -> u.getUsername().equals(username));
+        if (removed) {
+            saveUsersToFile();
+        }
+        return removed;
+    }
+
+    public boolean resetPassword(User u, String newPassword) {
+        // This depends on having a setPassword method in your User class
+        // that handles hashing the new password.
+        u.setPassword(newPassword);
+        saveUsersToFile();
+        return true;
     }
 }

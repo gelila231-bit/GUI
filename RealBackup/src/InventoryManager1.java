@@ -6,7 +6,7 @@ public class InventoryManager1 {
     private productIdGenerator idGenerator;
 
     public boolean createProduct(String newProductName, String variant, String category,
-                                 double productPrice, double productQuantity) {
+            double productPrice, double productQuantity) {
         idGenerator = new productIdGenerator();
         String productId = idGenerator.generateId(newProductName, variant, category);
 
@@ -48,10 +48,12 @@ public class InventoryManager1 {
     public boolean updateProduct(String productName, double newPrice, double newQuantity) {
         ArrayList<Product> matches = readProduct(productName);
         String targetId = getSelectedProductID(matches, productName);
-        if (targetId == null) return false;
+        if (targetId == null)
+            return false;
 
         Product target = findProductById(targetId);
-        if (target == null) return false;
+        if (target == null)
+            return false;
 
         target.setProductPrice(newPrice);
         target.setProductQuantity(newQuantity);
@@ -62,10 +64,12 @@ public class InventoryManager1 {
     public boolean updateProductPrice(String productName, double newPrice) {
         ArrayList<Product> matches = readProduct(productName);
         String targetId = getSelectedProductID(matches, productName);
-        if (targetId == null) return false;
+        if (targetId == null)
+            return false;
 
         Product target = findProductById(targetId);
-        if (target == null) return false;
+        if (target == null)
+            return false;
 
         target.setProductPrice(newPrice);
         saveToDisk();
@@ -75,10 +79,12 @@ public class InventoryManager1 {
     public boolean updateProductQuantity(String productName, int newQuantity) {
         ArrayList<Product> matches = readProduct(productName);
         String targetId = getSelectedProductID(matches, productName);
-        if (targetId == null) return false;
+        if (targetId == null)
+            return false;
 
         Product target = findProductById(targetId);
-        if (target == null) return false;
+        if (target == null)
+            return false;
 
         target.setProductQuantity(newQuantity);
         saveToDisk();
@@ -88,10 +94,12 @@ public class InventoryManager1 {
     public boolean deleteProduct(String productName) {
         ArrayList<Product> matches = readProduct(productName);
         String targetId = getSelectedProductID(matches, productName);
-        if (targetId == null) return false;
+        if (targetId == null)
+            return false;
 
         Product target = findProductById(targetId);
-        if (target == null) return false;
+        if (target == null)
+            return false;
 
         products.remove(target);
         saveToDisk();
@@ -108,11 +116,25 @@ public class InventoryManager1 {
 
     public void loadFromDisk() {
         ArrayList<String> lines = filehandler.readFromFile("inventory.txt");
-        products.clear();
+        int maxIdFound = 1000;
+
         for (String line : lines) {
             Product p = Product.fromString(line);
-            if (p != null) products.add(p);
+            if (p != null) {
+                products.add(p);
+
+                // Extract the numeric part of the ID (e.g., "1005" from "CAT-NAM-VAR-1005")
+                try {
+                    String[] parts = p.getProductID().split("-");
+                    int idNum = Integer.parseInt(parts[parts.length - 1]);
+                    if (idNum > maxIdFound)
+                        maxIdFound = idNum;
+                } catch (Exception e) {
+                    /* Skip malformed IDs */ }
+            }
         }
+        // Update the generator so the next ID is unique
+        productIdGenerator.setCounter(maxIdFound);
     }
 
     public ArrayList<String> getInventoryData() {

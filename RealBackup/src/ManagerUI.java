@@ -20,7 +20,7 @@ public class ManagerUI extends JFrame {
         setLayout(new BorderLayout());
 
         // Table
-        tableModel = new DefaultTableModel(new String[]{"Product ID", "Name", "Price", "Quantity"}, 0);
+        tableModel = new DefaultTableModel(new String[] { "Product ID", "Name", "Price", "Quantity" }, 0);
         productTable = new JTable(tableModel);
         JScrollPane scrollPane = new JScrollPane(productTable);
         add(scrollPane, BorderLayout.CENTER);
@@ -107,7 +107,8 @@ public class ManagerUI extends JFrame {
         for (String[] row : report) {
             textArea.append(String.join(" | ", row) + "\n");
         }
-        JOptionPane.showMessageDialog(this, new JScrollPane(textArea), "Inventory Report", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(this, new JScrollPane(textArea), "Inventory Report",
+                JOptionPane.INFORMATION_MESSAGE);
     }
 
     private void showSalesReport() {
@@ -123,7 +124,8 @@ public class ManagerUI extends JFrame {
         tableModel.setRowCount(0);
         ArrayList<Product> products = manager.getInventoryManager().getAllProducts(); // safer access
         for (Product p : products) {
-            tableModel.addRow(new Object[]{p.getProductID(), p.getProductName(), p.getProductPrice(), p.getProductQuantity()});
+            tableModel.addRow(
+                    new Object[] { p.getProductID(), p.getProductName(), p.getProductPrice(), p.getProductQuantity() });
         }
     }
 

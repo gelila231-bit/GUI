@@ -20,7 +20,7 @@ public class AdminUI extends JFrame {
         setLayout(new BorderLayout());
 
         // Table
-        tableModel = new DefaultTableModel(new String[]{"Role", "Username", "Employee ID"}, 0);
+        tableModel = new DefaultTableModel(new String[] { "Role", "Username", "Employee ID" }, 0);
         userTable = new JTable(tableModel);
         JScrollPane scrollPane = new JScrollPane(userTable);
         add(scrollPane, BorderLayout.CENTER);
@@ -80,7 +80,7 @@ public class AdminUI extends JFrame {
         String username = JOptionPane.showInputDialog(this, "Enter username to reset password:");
         String newPass = JOptionPane.showInputDialog(this, "Enter new password:");
 
-        ArrayList<User> users = admin.viewAllUsers();
+        ArrayList<User> users = admin.getAllUsers();
         for (User u : users) {
             if (u.getUsername().equals(username)) {
                 if (admin.resetPassword(u, newPass)) {
@@ -100,10 +100,9 @@ public class AdminUI extends JFrame {
         ArrayList<User> users = admin.getAllUsers();
         for (User u : users) {
             String role = u.getClass().getSimpleName();
-            tableModel.addRow(new Object[]{role, u.getUsername(), u.getIdForFile()});
+            tableModel.addRow(new Object[] { role, u.getUsername(), u.getIdForFile() });
         }
     }
-
 
     public static void main(String[] args) {
         FileHandler<String> fileHandler = new FileHandler<>();

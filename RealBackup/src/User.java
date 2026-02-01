@@ -41,7 +41,8 @@ public abstract class User {
 
     public boolean verifyPassword(String inputPassword) {
         String inputHash = hashPassword(inputPassword);
-        return hashedPassword != null && hashedPassword.equals(inputHash);
+        // Use .equals() and ensure it's not null
+        return this.hashedPassword != null && this.hashedPassword.equals(inputHash);
     }
 
     private String hashPassword(String password) {
