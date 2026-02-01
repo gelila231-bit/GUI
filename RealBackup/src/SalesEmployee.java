@@ -7,8 +7,8 @@ public class SalesEmployee extends Employee implements TransactionHandler, Produ
     private InventoryManager1 inventoryManager;
 
     public SalesEmployee(String username, String password, String employeeID,
-            FileHandler<TransactionRec> fileHandler,
-            InventoryManager1 inventoryManager) {
+                         FileHandler<TransactionRec> fileHandler,
+                         InventoryManager1 inventoryManager) {
         super(username, password, employeeID);
         this.transactionsRecord = new ArrayList<>();
         this.inventoryManager = inventoryManager;
@@ -16,14 +16,14 @@ public class SalesEmployee extends Employee implements TransactionHandler, Produ
         loadTransactionsFromDisk();
     }
 
-    public SalesEmployee(String username, String hashedPassword, String employeeID,
-            FileHandler<TransactionRec> fileHandler,
-            InventoryManager1 inventoryManager, boolean alreadyHashed) {
-        super(username, hashedPassword, employeeID, alreadyHashed);
+    public SalesEmployee(String username, String hashedPassword, String employeeId,
+                         FileHandler<TransactionRec> fileHandler,
+                         InventoryManager1 inventoryManager,
+                         boolean alreadyHashed) {
+        super(username, hashedPassword, employeeId, alreadyHashed);
         this.transactionsRecord = new ArrayList<>();
         this.fileHandler = fileHandler;
         this.inventoryManager = inventoryManager;
-        loadTransactionsFromDisk();
     }
 
     @Override
@@ -32,19 +32,17 @@ public class SalesEmployee extends Employee implements TransactionHandler, Produ
         transactionsRecord.add(tranRec);
         ArrayList<TransactionRec> toSave = new ArrayList<>();
         toSave.add(tranRec);
-        fileHandler.writeToFile("transaction.txt", toSave, true);
+        fileHandler.writeToFile("Transaction.txt", toSave, true);
     }
 
     @Override
     public boolean sellProduct(String productName, int quantity) {
-        if (quantity <= 0)
-            return false;
+        if (quantity <= 0) return false;
 
         ArrayList<Product> matchesList = inventoryManager.readProduct(productName);
         String productID = inventoryManager.getSelectedProductID(matchesList, productName);
 
-        if (productID == null)
-            return false;
+        if (productID == null) return false;
 
         Product product = inventoryManager.findProductById(productID);
 
@@ -63,8 +61,7 @@ public class SalesEmployee extends Employee implements TransactionHandler, Produ
 
     @Override
     public boolean processReturn(Product product, int quantity) {
-        if (product == null || quantity <= 0)
-            return false;
+        if (product == null || quantity <= 0) return false;
 
         product.setProductQuantity(product.getProductQuantity() + quantity);
         inventoryManager.saveToDisk();
@@ -74,7 +71,7 @@ public class SalesEmployee extends Employee implements TransactionHandler, Produ
 
         ArrayList<TransactionRec> toSave = new ArrayList<>();
         toSave.add(returnRec);
-        fileHandler.writeToFile("transaction.txt", toSave, true);
+        fileHandler.writeToFile("Transaction.txt", toSave, true);
 
         return true;
     }
@@ -88,7 +85,7 @@ public class SalesEmployee extends Employee implements TransactionHandler, Produ
     }
 
     public void loadTransactionsFromDisk() {
-        ArrayList<String> lines = fileHandler.readFromFile("transaction.txt");
+        ArrayList<String> lines = fileHandler.readFromFile("Transaction.txt");
         this.transactionsRecord.clear();
         for (String line : lines) {
             try {
@@ -109,8 +106,5 @@ public class SalesEmployee extends Employee implements TransactionHandler, Produ
     public ArrayList<TransactionRec> getAllTransactions() {
         return getTransactionsRecord();
     }
-
-    public InventoryManager1 getInventoryManager() {
-        return this.inventoryManager;
-    }
 }
+

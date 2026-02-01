@@ -13,15 +13,14 @@ public class Manager extends Employee implements ReportGenerator, ProductViewer 
 
     }
 
-    public Manager(String username, String hashedPassword, String employeeId,
-            InventoryManager1 inventoryManager, boolean alreadyHashed) {
+    public Manager(String username, String hashedPassword, String employeeId, InventoryManager1 inventoryManager, boolean alreadyHashed) {
         super(username, hashedPassword, employeeId, alreadyHashed);
         this.inventoryManager = inventoryManager;
         this.reportClass = new NewReportClass();
     }
 
     public boolean addProduct(String newProductName, String variant, String category, double productPrice,
-            double productQuantity) {
+                              double productQuantity) {
         return inventoryManager.createProduct(newProductName, variant, category, productPrice, productQuantity);
     }
 
@@ -32,10 +31,10 @@ public class Manager extends Employee implements ReportGenerator, ProductViewer 
     public boolean deleteProduct(String productName) {
         return inventoryManager.deleteProduct(productName);
     }
-
     public ArrayList<Product> getAllProducts() {
         return inventoryManager.getAllProducts();
     }
+
 
     public boolean changeProductPrice(String productName, double newPrice) {
         return inventoryManager.updateProductPrice(productName, newPrice);
@@ -45,17 +44,5 @@ public class Manager extends Employee implements ReportGenerator, ProductViewer 
         return inventoryManager.updateProductQuantity(productName, newQuantity);
     }
 
-    public InventoryManager1 getInventoryManager() {
-        return this.inventoryManager;
-    }
-
-    @Override
-    public ArrayList<String[]> generateInventoryReport() {
-        return reportClass.getInventoryReport(inventoryManager.getInventoryData());
-    }
-
-    @Override
-    public ArrayList<String[]> generateSalesReport() {
-        return reportClass.getSalesReport(inventoryManager.getSalesData());
-    }
+    @Override public ArrayList<String[]> generateInventoryReport() { return reportClass.getInventoryReport(inventoryManager.getInventoryData()); } @Override public ArrayList<String[]> generateSalesReport() { return reportClass.getSalesReport(inventoryManager.getSalesData()); }
 }

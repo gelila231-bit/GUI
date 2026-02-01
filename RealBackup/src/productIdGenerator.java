@@ -7,7 +7,4 @@ public class productIdGenerator {
         String n = name.length() >= 3 ? name.substring(0, 3).toUpperCase() : name.toUpperCase();
         return c + "-" + n + "-" + v + "-" + counter++;
     }
-    public static void setCounter(int lastId) {
-    counter = lastId + 1;
-}
 }

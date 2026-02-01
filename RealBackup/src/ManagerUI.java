@@ -8,23 +8,18 @@ public class ManagerUI extends JFrame {
     private Manager manager;
     private JTable productTable;
     private DefaultTableModel tableModel;
-    private JLabel statusLabel;
-    private JTextField searchField;
 
     public ManagerUI(Manager manager) {
         this.manager = manager;
-        setTitle("Manager Dashboard - " + manager.getEmployeeID());
-        setSize(1000, 700);
+        setTitle("Manager Dashboard");
+        setSize(900, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        // Set modern look
-        try {
-            UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
-        } catch (Exception e) {
-            // Use default
-        }
+        // Layout
+        setLayout(new BorderLayout());
 
+<<<<<<< HEAD
         initComponents();
         loadProducts();
     }
@@ -79,29 +74,31 @@ public class ManagerUI extends JFrame {
         productTable.getColumnModel().getColumn(5).setPreferredWidth(80);
         productTable.getColumnModel().getColumn(6).setPreferredWidth(80);
 
+=======
+        // Table
+        tableModel = new DefaultTableModel(new String[]{"Product ID", "Name", "Price", "Quantity"}, 0);
+        productTable = new JTable(tableModel);
+>>>>>>> parent of 3a0d056 (major changes)
         JScrollPane scrollPane = new JScrollPane(productTable);
         add(scrollPane, BorderLayout.CENTER);
 
-        // Button panel with better organization
-        JPanel buttonPanel = createButtonPanel();
-        add(buttonPanel, BorderLayout.SOUTH);
-    }
-
-    private JPanel createButtonPanel() {
-        JPanel mainButtonPanel = new JPanel(new BorderLayout());
-
-        // Product management buttons
-        JPanel productPanel = new JPanel(new FlowLayout());
+        // Buttons
+        JPanel buttonPanel = new JPanel(new FlowLayout());
         JButton addProductBtn = new JButton("Add Product");
         JButton updateProductBtn = new JButton("Update Product");
         JButton deleteProductBtn = new JButton("Delete Product");
         JButton refreshBtn = new JButton("Refresh");
+        JButton inventoryReportBtn = new JButton("Inventory Report");
+        JButton salesReportBtn = new JButton("Sales Report");
 
-        styleButton(addProductBtn, new Color(46, 204, 113));
-        styleButton(updateProductBtn, new Color(52, 152, 219));
-        styleButton(deleteProductBtn, new Color(231, 76, 60));
-        styleButton(refreshBtn, new Color(149, 165, 166));
+        buttonPanel.add(addProductBtn);
+        buttonPanel.add(updateProductBtn);
+        buttonPanel.add(deleteProductBtn);
+        buttonPanel.add(refreshBtn);
+        buttonPanel.add(inventoryReportBtn);
+        buttonPanel.add(salesReportBtn);
 
+<<<<<<< HEAD
         productPanel.add(addProductBtn);
         productPanel.add(updateProductBtn);
         productPanel.add(deleteProductBtn);
@@ -124,6 +121,9 @@ public class ManagerUI extends JFrame {
 
         mainButtonPanel.add(productPanel, BorderLayout.CENTER);
         mainButtonPanel.add(reportPanel, BorderLayout.SOUTH);
+=======
+        add(buttonPanel, BorderLayout.SOUTH);
+>>>>>>> parent of 3a0d056 (major changes)
 
         // Actions
         addProductBtn.addActionListener(this::handleAddProduct);
@@ -134,241 +134,79 @@ public class ManagerUI extends JFrame {
         salesReportBtn.addActionListener(e -> showSalesReport());
         stockAlertBtn.addActionListener(e -> showStockAlerts());
 
-        return mainButtonPanel;
-    }
-
-    private void styleButton(JButton button, Color color) {
-        button.setBackground(color);
-        button.setForeground(Color.WHITE);
-        button.setFocusPainted(false);
-        button.setBorder(BorderFactory.createEmptyBorder(8, 16, 8, 16));
-        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        // Initial load
+        loadProducts();
     }
 
     private void handleAddProduct(ActionEvent e) {
-        JDialog dialog = new JDialog(this, "Add New Product", true);
-        dialog.setSize(400, 300);
-        dialog.setLocationRelativeTo(this);
+        try {
+            String name = JOptionPane.showInputDialog(this, "Enter product name:");
+            String variant = JOptionPane.showInputDialog(this, "Enter variant:");
+            String category = JOptionPane.showInputDialog(this, "Enter category:");
+            double price = Double.parseDouble(JOptionPane.showInputDialog(this, "Enter price:"));
+            double quantity = Double.parseDouble(JOptionPane.showInputDialog(this, "Enter quantity:"));
 
-        JPanel panel = new JPanel(new GridLayout(5, 2, 10, 10));
-        JTextField nameField = new JTextField();
-        JTextField variantField = new JTextField();
-        JTextField categoryField = new JTextField();
-        JTextField priceField = new JTextField();
-        JTextField quantityField = new JTextField();
-
-        panel.add(new JLabel("Product Name:"));
-        panel.add(nameField);
-        panel.add(new JLabel("Variant:"));
-        panel.add(variantField);
-        panel.add(new JLabel("Category:"));
-        panel.add(categoryField);
-        panel.add(new JLabel("Price:"));
-        panel.add(priceField);
-        panel.add(new JLabel("Quantity:"));
-        panel.add(quantityField);
-
-        JButton addBtn = new JButton("Add Product");
-        JButton cancelBtn = new JButton("Cancel");
-
-        addBtn.addActionListener(event -> {
-            try {
-                String name = nameField.getText().trim();
-                String variant = variantField.getText().trim();
-                String category = categoryField.getText().trim();
-                double price = Double.parseDouble(priceField.getText().trim());
-                double quantity = Double.parseDouble(quantityField.getText().trim());
-
-                if (name.isEmpty() || variant.isEmpty() || category.isEmpty()) {
-                    JOptionPane.showMessageDialog(dialog, "Please fill in all fields.", "Error",
-                            JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-
-                if (manager.addProduct(name, variant, category, price, quantity)) {
-                    statusLabel.setText("Product added successfully!");
-                    loadProducts();
-                    dialog.dispose();
-                } else {
-                    JOptionPane.showMessageDialog(dialog, "Failed to add product.", "Error", JOptionPane.ERROR_MESSAGE);
-                }
-            } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(dialog, "Invalid number input. Please enter valid numbers.", "Error",
-                        JOptionPane.ERROR_MESSAGE);
+            if (manager.addProduct(name, variant, category, price, quantity)) {
+                JOptionPane.showMessageDialog(this, "Product added successfully!");
+                loadProducts();
+            } else {
+                JOptionPane.showMessageDialog(this, "Failed to add product.");
             }
-        });
-
-        cancelBtn.addActionListener(event -> dialog.dispose());
-
-        JPanel buttonPanel = new JPanel(new FlowLayout());
-        buttonPanel.add(addBtn);
-        buttonPanel.add(cancelBtn);
-
-        dialog.setLayout(new BorderLayout());
-        dialog.add(panel, BorderLayout.CENTER);
-        dialog.add(buttonPanel, BorderLayout.SOUTH);
-        dialog.setVisible(true);
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Invalid number input. Please try again.");
+        }
     }
 
     private void handleUpdateProduct(ActionEvent e) {
-        int selectedRow = productTable.getSelectedRow();
-        if (selectedRow == -1) {
-            JOptionPane.showMessageDialog(this, "Please select a product to update.", "No Selection",
-                    JOptionPane.WARNING_MESSAGE);
-            return;
-        }
+        try {
+            String name = JOptionPane.showInputDialog(this, "Enter product name to update:");
+            double price = Double.parseDouble(JOptionPane.showInputDialog(this, "Enter new price:"));
+            double quantity = Double.parseDouble(JOptionPane.showInputDialog(this, "Enter new quantity:"));
 
-        String currentName = productTable.getValueAt(selectedRow, 1).toString();
-        String currentPrice = productTable.getValueAt(selectedRow, 2).toString();
-        String currentQuantity = productTable.getValueAt(selectedRow, 3).toString();
-
-        JDialog dialog = new JDialog(this, "Update Product", true);
-        dialog.setSize(350, 200);
-        dialog.setLocationRelativeTo(this);
-
-        JPanel panel = new JPanel(new GridLayout(3, 2, 10, 10));
-        JTextField priceField = new JTextField(currentPrice);
-        JTextField quantityField = new JTextField(currentQuantity);
-
-        panel.add(new JLabel("Product:"));
-        panel.add(new JLabel(currentName));
-        panel.add(new JLabel("New Price:"));
-        panel.add(priceField);
-        panel.add(new JLabel("New Quantity:"));
-        panel.add(quantityField);
-
-        JButton updateBtn = new JButton("Update");
-        JButton cancelBtn = new JButton("Cancel");
-
-        updateBtn.addActionListener(event -> {
-            try {
-                double price = Double.parseDouble(priceField.getText().trim());
-                double quantity = Double.parseDouble(quantityField.getText().trim());
-
-                if (manager.updateProduct(currentName, price, quantity)) {
-                    statusLabel.setText("Product updated successfully!");
-                    loadProducts();
-                    dialog.dispose();
-                } else {
-                    JOptionPane.showMessageDialog(dialog, "Failed to update product.", "Error",
-                            JOptionPane.ERROR_MESSAGE);
-                }
-            } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(dialog, "Invalid number input.", "Error", JOptionPane.ERROR_MESSAGE);
+            if (manager.updateProduct(name, price, quantity)) {
+                JOptionPane.showMessageDialog(this, "Product updated successfully!");
+                loadProducts();
+            } else {
+                JOptionPane.showMessageDialog(this, "Failed to update product.");
             }
-        });
-
-        cancelBtn.addActionListener(event -> dialog.dispose());
-
-        JPanel buttonPanel = new JPanel(new FlowLayout());
-        buttonPanel.add(updateBtn);
-        buttonPanel.add(cancelBtn);
-
-        dialog.setLayout(new BorderLayout());
-        dialog.add(panel, BorderLayout.CENTER);
-        dialog.add(buttonPanel, BorderLayout.SOUTH);
-        dialog.setVisible(true);
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Invalid number input. Please try again.");
+        }
     }
 
     private void handleDeleteProduct(ActionEvent e) {
-        int selectedRow = productTable.getSelectedRow();
-        if (selectedRow == -1) {
-            JOptionPane.showMessageDialog(this, "Please select a product to delete.", "No Selection",
-                    JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        String productName = productTable.getValueAt(selectedRow, 1).toString();
-
-        int confirm = JOptionPane.showConfirmDialog(this,
-                "Are you sure you want to delete '" + productName + "'?",
-                "Confirm Delete", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-
-        if (confirm == JOptionPane.YES_OPTION) {
-            if (manager.deleteProduct(productName)) {
-                statusLabel.setText("Product deleted successfully!");
-                loadProducts();
-            } else {
-                JOptionPane.showMessageDialog(this, "Failed to delete product.", "Error", JOptionPane.ERROR_MESSAGE);
-            }
+        String name = JOptionPane.showInputDialog(this, "Enter product name to delete:");
+        if (manager.deleteProduct(name)) {
+            JOptionPane.showMessageDialog(this, "Product deleted successfully!");
+            loadProducts();
+        } else {
+            JOptionPane.showMessageDialog(this, "Failed to delete product.");
         }
     }
 
     private void showInventoryReport() {
         ArrayList<String[]> report = manager.generateInventoryReport();
-
-        JDialog reportDialog = new JDialog(this, "Inventory Report", false);
-        reportDialog.setSize(600, 400);
-        reportDialog.setLocationRelativeTo(this);
-
         JTextArea textArea = new JTextArea();
-        textArea.setEditable(false);
-        textArea.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
-        textArea.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-
-        StringBuilder reportText = new StringBuilder();
-        reportText.append("INVENTORY REPORT\n");
-        reportText.append("================\n\n");
-
         for (String[] row : report) {
-            reportText.append(String.join(" | ", row)).append("\n");
+            textArea.append(String.join(" | ", row) + "\n");
         }
-
-        textArea.setText(reportText.toString());
-
-        JButton closeBtn = new JButton("Close");
-        closeBtn.addActionListener(e -> reportDialog.dispose());
-
-        reportDialog.setLayout(new BorderLayout());
-        reportDialog.add(new JScrollPane(textArea), BorderLayout.CENTER);
-
-        JPanel buttonPanel = new JPanel(new FlowLayout());
-        buttonPanel.add(closeBtn);
-        reportDialog.add(buttonPanel, BorderLayout.SOUTH);
-
-        reportDialog.setVisible(true);
+        JOptionPane.showMessageDialog(this, new JScrollPane(textArea), "Inventory Report", JOptionPane.INFORMATION_MESSAGE);
     }
 
     private void showSalesReport() {
         ArrayList<String[]> report = manager.generateSalesReport();
-
-        JDialog reportDialog = new JDialog(this, "Sales Report", false);
-        reportDialog.setSize(600, 400);
-        reportDialog.setLocationRelativeTo(this);
-
         JTextArea textArea = new JTextArea();
-        textArea.setEditable(false);
-        textArea.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
-        textArea.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-
-        StringBuilder reportText = new StringBuilder();
-        reportText.append("SALES REPORT\n");
-        reportText.append("============\n\n");
-
         for (String[] row : report) {
-            reportText.append(String.join(" | ", row)).append("\n");
+            textArea.append(String.join(" | ", row) + "\n");
         }
-
-        textArea.setText(reportText.toString());
-
-        JButton closeBtn = new JButton("Close");
-        closeBtn.addActionListener(e -> reportDialog.dispose());
-
-        reportDialog.setLayout(new BorderLayout());
-        reportDialog.add(new JScrollPane(textArea), BorderLayout.CENTER);
-
-        JPanel buttonPanel = new JPanel(new FlowLayout());
-        buttonPanel.add(closeBtn);
-        reportDialog.add(buttonPanel, BorderLayout.SOUTH);
-
-        reportDialog.setVisible(true);
+        JOptionPane.showMessageDialog(this, new JScrollPane(textArea), "Sales Report", JOptionPane.INFORMATION_MESSAGE);
     }
 
     private void loadProducts() {
         tableModel.setRowCount(0);
-        ArrayList<Product> products = manager.getInventoryManager().getAllProducts();
-
+        ArrayList<Product> products = manager.getInventoryManager().getAllProducts(); // safer access
         for (Product p : products) {
+<<<<<<< HEAD
             String status = "";
             double quantity = p.getProductQuantity();
             if (quantity == 0) {
@@ -434,6 +272,10 @@ public class ManagerUI extends JFrame {
         }
 
         statusLabel.setText("Found " + foundCount + " products matching '" + searchTerm + "'");
+=======
+            tableModel.addRow(new Object[]{p.getProductID(), p.getProductName(), p.getProductPrice(), p.getProductQuantity()});
+        }
+>>>>>>> parent of 3a0d056 (major changes)
     }
 
     private void showStockAlerts() {
